@@ -5,62 +5,141 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Kho phụ tùng ô tô</title>
   <style>
-    body{font-family:system-ui,Arial;margin:0;background:#f6f7fb}
-    header{background:#111827;color:#fff;padding:12px 16px;display:flex;gap:10px;align-items:center}
+    :root{
+      --bg:#e9fbe9;
+      --header:#0f3d2e;
+      --btn:#22c55e;
+      --btn-dark:#14532d;
+      --border:#d1fae5;
+      --muted:#6b7280;
+      --radius:14px;
+    }
+
+    *{box-sizing:border-box}
+    body{font-family:system-ui,Arial;margin:0;background:var(--bg)}
+    header{background:var(--header);color:#fff;padding:12px 16px;display:flex;gap:10px;align-items:center}
     header h1{font-size:16px;margin:0;flex:1}
     nav{display:flex;gap:8px;flex-wrap:wrap}
-    nav button{background:#1f2937;color:#fff;border:0;padding:8px 10px;border-radius:10px;cursor:pointer}
-    nav button.active{background:#2563eb}
-    main{padding:16px}
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
-    input,select,textarea{padding:10px;border:1px solid #d1d5db;border-radius:10px;background:#fff}
-    textarea{min-height:80px;width:100%}
-    .cardgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
-    .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
-    .card img{width:100%;height:140px;object-fit:cover;border-radius:12px;background:#f3f4f6}
-    .badge{display:inline-block;background:#eef2ff;color:#3730a3;padding:4px 8px;border-radius:999px;font-size:12px}
-    .btn{background:#2563eb;color:#fff;border:0;padding:10px 12px;border-radius:12px;cursor:pointer}
-    .btn.gray{background:#6b7280}
-    .btn.red{background:#dc2626}
-    .panel{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:12px}
+    nav button{background:var(--btn-dark);color:#fff;border:0;padding:8px 10px;border-radius:10px;cursor:pointer}
+    nav button.active{background:var(--btn)}
+    main{padding:16px;padding-bottom:64px}
+
+    .panel{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
     .hidden{display:none}
-    footer{position:fixed;left:0;right:0;bottom:0;background:#111827;color:#fff;padding:8px 12px;font-size:12px;overflow:hidden;white-space:nowrap}
+
+    /* form layout */
+    .formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:860px){ .formGrid{grid-template-columns:1fr} }
+
+    .field{display:flex;flex-direction:column;gap:6px}
+    .field label{font-size:13px;color:#111827;font-weight:600}
+    input,select,textarea{
+      height:42px;
+      padding:10px 12px;
+      border:1px solid #c7d2c9;
+      border-radius:12px;
+      background:#fff;
+      font-size:14px;
+      outline:none;
+    }
+    textarea{height:auto;min-height:90px}
+    input:focus,select:focus,textarea:focus{border-color:#16a34a;box-shadow:0 0 0 3px rgba(34,197,94,.2)}
+
+    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+    .btn{background:var(--btn);color:#fff;border:0;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:600}
+    .btn.gray{background:var(--muted)}
+    .btn.red{background:#dc2626}
+
+    .cardgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+    .card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:12px;box-shadow:0 6px 18px rgba(0,0,0,.05)}
+    .card img{width:100%;height:140px;object-fit:cover;border-radius:12px;background:#f0fdf4}
+    .badge{display:inline-block;background:#dcfce7;color:#14532d;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:600}
+
+    /* modal */
+    #modalRoot.hidden{display:none}
+    .modalBackdrop{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.45);
+      display:flex; align-items:center; justify-content:center;
+      padding:18px;
+    }
+    .modal{
+      width:min(980px, 100%);
+      background:#fff;
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      overflow:hidden;
+    }
+    .modalHeader{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 16px;
+      background:#f0fdf4;
+      border-bottom:1px solid var(--border);
+      gap:12px;
+    }
+    .modalHeader h2{margin:0;font-size:18px}
+    .modalBody{padding:16px}
+    .modalActions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+
+    /* image preview in modal */
+    .imgBox{
+      border:1px dashed #a7f3d0;
+      background:#f0fdf4;
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .imgPreview{
+      width:100%;
+      height:280px;
+      object-fit:contain;
+      background:#fff;
+      border-radius:12px;
+      border:1px solid var(--border);
+    }
+
+    table{width:100%;border-collapse:collapse}
+    th,td{border-bottom:1px solid var(--border);padding:10px 8px;text-align:left;font-size:14px}
+    a{color:#166534}
+
+    footer{position:fixed;left:0;right:0;bottom:0;background:var(--header);color:#fff;padding:8px 12px;font-size:12px;overflow:hidden;white-space:nowrap}
     .marquee{display:inline-block;padding-left:100%;animation:marq 18s linear infinite}
     @keyframes marq{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-    .modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:16px}
-    .modal{max-width:860px;width:100%;background:#fff;border-radius:16px;padding:14px}
-    table{width:100%;border-collapse:collapse}
-    th,td{border-bottom:1px solid #e5e7eb;padding:8px;text-align:left;font-size:14px}
   </style>
 </head>
 <body>
-  <header>
-    <h1>Kho phụ tùng ô tô</h1>
-    <nav>
-      <button data-tab="all" class="active">Tất cả sản phẩm</button>
-      <button data-tab="products">Products</button>
-      <button data-tab="import">Nhập hàng</button>
-      <button data-tab="export">Xuất hàng</button>
-      <button data-tab="check">Kiểm tra hàng</button>
-      <button data-tab="admin">Admin</button>
-    </nav>
-  </header>
+<header>
+  <h1>Kho phụ tùng ô tô</h1>
+  <nav>
+    <button data-tab="all" class="active">Tất cả sản phẩm</button>
+    <button data-tab="products">Products</button>
+    <button data-tab="import">Nhập hàng</button>
+    <button data-tab="export">Xuất hàng</button>
+    <button data-tab="check">Kiểm tra hàng</button>
+    <button data-tab="admin">Admin</button>
+  </nav>
+</header>
 
-  <main>
-    <section id="tab-all"></section>
-    <section id="tab-products" class="hidden"></section>
-    <section id="tab-import" class="hidden"></section>
-    <section id="tab-export" class="hidden"></section>
-    <section id="tab-check" class="hidden"></section>
-    <section id="tab-admin" class="hidden"></section>
-  </main>
+<main>
+  <section id="tab-all"></section>
+  <section id="tab-products" class="hidden"></section>
+  <section id="tab-import" class="hidden"></section>
+  <section id="tab-export" class="hidden"></section>
+  <section id="tab-check" class="hidden"></section>
+  <section id="tab-admin" class="hidden"></section>
+</main>
 
-  <div id="modalRoot" class="hidden"></div>
+<div id="modalRoot" class="hidden"></div>
 
-  <footer><span class="marquee">© Bản quyền thuộc về Hải Võ thanh (VÕ CHÂU NGUYÊN) — Auto Parts Warehouse</span></footer>
+<footer>
+  <span class="marquee">© Bản quyền thuộc về Hải Võ thanh  — Auto Parts Warehouse</span>
+</footer>
 
-  <script src="app.js"></script>
-  <script src="product.js"></script>
-  <script src="admin.js"></script>
+<script src="app.js"></script>
+<script src="product.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>
